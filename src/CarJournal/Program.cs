@@ -6,8 +6,9 @@ using MudBlazor.Services;
 // configure the dependency injection
 var builder = WebApplication.CreateBuilder(args);
 {
+    var connectionString = builder.Configuration.GetConnectionString("Default");
     builder.Services.AddDbContextFactory<CarJournalDbContext>(options =>
-    options.UseNpgsql(DbConstants.ConnectionString));
+    options.UseNpgsql(connectionString));
 
     builder.Services.AddScoped<CarJournalDbContext>(provider =>
         provider.GetRequiredService<IDbContextFactory<CarJournalDbContext>>().CreateDbContext());
@@ -21,6 +22,8 @@ var builder = WebApplication.CreateBuilder(args);
                     .AddControllers();
 
     builder.Services.AddAuthenticationCore();
+
+    builder.WebHost.UseUrls("http://0.0.0.0:5001");
 }
 
 // Configure the HTTP request pipeline.
@@ -42,6 +45,8 @@ var app = builder.Build();
 
     app.UseAuthentication();
     app.UseAuthorization();
+
+    app.UseMigrations();
 
     app.Run();
 }

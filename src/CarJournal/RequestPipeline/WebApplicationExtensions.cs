@@ -3,6 +3,8 @@ using CarJournal.Jobs;
 
 using Hangfire;
 
+using Microsoft.EntityFrameworkCore;
+
 public static class WebApplicationExtensions
 {
     public static WebApplication IncludeDeveloperServices(
@@ -36,6 +38,16 @@ public static class WebApplicationExtensions
             "10 15 * * *", //minute hour day month year
             options
         );
+
+        return app;
+    }
+
+    public static WebApplication UseMigrations(this WebApplication app)
+    {
+        app.Services.CreateScope()
+            .ServiceProvider.GetRequiredService<CarJournalDbContext>()
+            .Database
+            .Migrate();
 
         return app;
     }
